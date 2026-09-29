@@ -1,0 +1,134 @@
+\documentclass{article}
+
+% Preamble: Comparing Computational Methods
+\title{Evaluating the Accuracy of Horner's Method}
+\author{Jaden Krause}
+\date{September 15, 2026}
+\usepackage{float}
+
+% --- ARTICLE CLASS FLOATING BEHAVIOR ---
+\renewcommand{\topfraction}{0.9}         % Allow tables to take up 90% of the top of a page
+\renewcommand{\bottomfraction}{0.8}      % Allow tables to take up 80% of the bottom of a page
+\renewcommand{\textfraction}{0.05}       % Allow text to squeeze into spaces as small as 5% of a page
+\renewcommand{\floatpagefraction}{0.95}  % Only give a table its own blank page if it takes up 95%+ of the area
+% -------------------------------------------------------------
+
+
+\begin{document}
+
+\maketitle % Actually draws the title
+\section{Introduction}
+
+Evaluating polynomials can be a simple task, depending on the size
+of the expression. The higher the degree of the function, the more tedious
+solving it can become. This is also an important consideration when using 
+a computer to solve polynomials. The speed of solving the function can be 
+improved if the step-by-step operations are reduced to simple expressions. 
+This is where Horner's Method applies itself. This method successively factors out 
+the independent variable until the expression is reduced to single-degree, "nested" 
+expressions. This setup is advantageous when using a computer to evaluate polynomials,
+as it is easy to repetitively evaluate the simplified expressions using code. In this report, 
+I give a comparison between evaluating polynomials normally and using Horner's Method,
+and the respective errors I obtained due to floating-point error and loss of significance.
+
+\section{Problem 1}
+$$ P(x) = 1 + x + ... + x^{50} $$
+$$ x = 1.00001 $$
+
+I evaluated the above expression at the indicated value of 'x' using Python. I 
+obtained the following values:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|r|}
+\hline
+Method & Result \\ \hline
+Polynomial & 51.012752082745230 \\ \hline
+Horner's & 51.012752082749991 \\ \hline
+\end{tabular}
+\caption{Problem 1 Results}
+\label{tab:problem_1_results}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|r|}
+\hline
+Error Type & Result \\ \hline
+Absolute & 4.8e-12 \\ \hline
+Relative & 9.3e-12\% \\ \hline
+\end{tabular}
+\caption{Error Approximations 1}
+\label{tab:error_approximations_1}
+\end{table}
+
+These results show that Horner's Method yields a very close approximation of the exact
+polynomial evaluated at the point. The calculated results show no discrepancy until the 
+12th decimal place. 
+
+\section{Problem 2}
+$$ P(x) = 1 - x + x^2 - x^3 + ... + x^{98} - x^{99} $$
+$$ x = 1.00001 $$
+
+I evaluated the above expression at the indicated value of 'x' using Python, obtaining
+the following values:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|r|}
+\hline
+Method & Result \\ \hline
+Polynomial & -0.000500245079647 \\ \hline
+Horner's & -0.000500245079648 \\ \hline
+\end{tabular}
+\caption{Problem 2 Results}
+\label{tab:problem_2_results}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|r|}
+\hline
+Error Type & Result \\ \hline
+Absolute & 1.7e-16 \\ \hline
+Relative & 3.4e-11\% \\ \hline
+\end{tabular}
+\caption{Error Approximations 2}
+\label{tab:error_approximations_2}
+\end{table}
+
+These results further support the validity of Horner's Method by showing very similar 
+results, having no disagreement until the 15th decimal place.
+
+\section{A Discussion of Floating-Point Error and Loss of Significance}
+
+When using code to compute expressions like this, it is important to consider possible 
+errors and how they affect the computation. Because computers have finite precision, 
+rounding error can be compounded by certain calculations and terminate in imprecise results.
+(Sauer, Timothy, \textit{Numerical Analysis}). These errors cause a loss of significant 
+digits in the answer. In the example of the problems solved above, repeated multiplication
+combined with the computer's finite precision gave the errors found. Fortunately, we didn't 
+experience any loss of significant digits, as our independent variable possessed 6, and our 
+answers only diverged at much higher numbers of precision. 
+
+Occasionally, expressions can be manipulated to yield more precise answers. This is especially 
+evident in trigonometric expressions and expressions involving square roots.
+
+\section {Different Solution Types}
+When solving differential equations, multiple types of solution can suit the purpose and 
+provide different advantages and disadvantages. Explicit, implicit, graphical, and numerical 
+solutions provide distinct benefits when it comes to the computation, precision, and ease of 
+use for your data.
+
+\section{Conclusion}
+In this report, we discussed the usefulness of Horner's Method in evaluating high-degree 
+polynomials when using a computer. We looked at two example problems and the absolute and 
+percentage error between Horner's Method and exact polynomial evaluation. We discussed the 
+inherent errors in computational evaluation of complicated expressions, and we briefly addressed
+the range of solutions when solving both differential equations and complex expressions.
+
+\section{Bibliography}
+Sauer, Timothy (2017). \textit{Numerical Analysis}. 3rd ed. Pearson. 
+ISBN: 9780134696454
+
+\end{document}
