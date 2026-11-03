@@ -1,0 +1,172 @@
+\documentclass{article}
+
+\title{Runge-Kutta Methods and Mechanical Oscillators}
+\author{Jaden Krause}
+\date{October 27, 2026}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\makeatletter
+\renewcommand{\topfraction}{0.95}       % Allow figures to use up to 95% of the page top
+\renewcommand{\textfraction}{0.05}      % Allow text to take as little as 5% of the page 
+\renewcommand{\bottomfraction}{0.95}    % Allow figures to use up to 95% of the page bottom
+\renewcommand{\floatpagefraction}{0.85}  % Allow a float page to be created even if it's only 20% full
+\setcounter{topnumber}{4}               % Allow up to 4 figures at the top of a page
+\setcounter{bottomnumber}{4}            % Allow up to 4 figures at the bottom of a page
+\setcounter{totalnumber}{8}             % Allow up to 8 total figures per page
+\makeatother
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Continuing the study of differential equations, it behooves us to find a numerical approximation method 
+which yields more accuracy than Euler's Method. As seen in previous work, Euler's Method has inherent error 
+due to its approach of finding the slope of the line at the starting point of the interval. There are 
+ways we can compensate Euler's Method to yield greater accuracy, and there are other methods with higher 
+orders of accuracy that are better suited to many problems. In this paper, we will consider these ramifications. 
+\par One practical application of higher-order approximation methods is mechanical oscillators. This is 
+also an object of interest when studying differential equations, as the functions for oscillators are 
+derived using differential equations. More accurate approximation methods are needed for these problems 
+because the slope changes frequently, and often faster than a method like Euler's could compensate for. 
+In this paper, we will be examining how new methods of numerical approximation can be applied to oscillator 
+problems.
+
+\section{Better Methods of Approximation}
+\subsection{Improving Euler's Method}
+When we evaluated Euler's method, we found that it approximated the function by estimating the slope of the 
+function at a point, moving forward a step size $h$, and repeating the process. This resulted in the approximation 
+deviating from the true function, generally erring behind the curve and changing slower, ultimately shown 
+in Euler's order of convergence being 1 ($\mathcal{O}(h)$). This tendency is magnified 
+with graphs that change rapidly and large step size $h$. For a more in-depth discussion of these tendencies, refer 
+to Krause, Jaden \textit{Initial Value Problems and Euler's Method}, 2026. 
+\par To improve Euler's method and minimize these error tendencies, we employ what is referred to as the midpoint 
+method, or Runge-Kutta 2 (RK2). This method takes the form: 
+\begin{align*}
+x_{n+1} &= x_n + h, \\
+y_{n+1} &= y_n + hf(x_n + \frac{h}{2}, y_n + \frac{h}{2}f(x_n, y_n)).
+\end{align*}
+This method has convergence of order 2 ($\mathcal{O}(h^2)$). Practically, this method uses a similar approach to 
+Euler's but approximates the slope of the function at the midpoint between the present time step $x_n$ and the 
+next step at $x_{n+1}$ to obtain greater accuracy and follow the graph closer. 
+\subsection{Higher-Order Convergence Methods}
+With a little extra work, the midpoint formula can be modified to increase the convergence of the formula. This is 
+done using the Taylor expansion; 
+\begin{align*}
+x_{n+1} &= x_n + h \\
+y_{n+1} &= y_n + hf(x_n, y_n) + \frac{h^2}{2!}f_2(x_n, y_n) + \cdots + \frac{h^p}{p!}f_p(x_n, y_n)
+\end{align*}
+with convergence of order $\mathcal{O}(h^p)$ for a Taylor method of order $p$. This leaves us with the question, how 
+many terms do we include? Accuracy increases with each further step, but computational difficulty increases exponentially 
+as we need to compute more partial derivatives to obtain $f_p$ (full explanation of process and proofs found in Nagle, et al. 
+132-133). Carrying out this formula to the fourth degree yields a convergence rate of $\mathcal{O}(h^4)$ with a formula that 
+is easy to program and carry out. This is the most popular of the numerical approximation methods, and is known as Runge-Kutta 
+4 (RK4):
+%RUNGE-KUTTA 4 METHOD FORMULAS. ENSURE IN THE RIGHT PLACE OF DOCUMENT
+\begin{align*}
+    x_{n+1} &= x_n + h, \\
+    y_{n+1} &= y_n + \frac{1}{6}(k_1 + 2k_2 + 2k_3 +k_4), 
+\end{align*}
+where
+\begin{align*}
+    k_1 &= hf(x_n, y_n), \\
+    k_2 &= hf(x_n + \frac{h}{2}, y_n + \frac{k_1}{2}), \\
+    k_3 &= hf(x_n + \frac{h}{2}, y_n + \frac{k_2}{2}), \\
+    k_4 &= hf(x_n + h, y_n + k_3)
+\end{align*}
+Runge-Kutta 4's balance of accuracy and computational ease are what make it such a widespread solution for numerical integration 
+in differential equations. Figure 1 shows an accuracy comparison between RK2 and RK4, in which RK4 is seen to adhere much closer 
+to the true curve of the function. We will be using RK4 for the rest of this discussion as we turn to evaluating 
+mechanical oscillators.
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{FiguresofRK4/RK2vsRK4.png}
+    \caption{Comparison between RK2 and RK4}
+\end{figure}
+\section{Mechanical Oscillators and Damping}
+\subsection{The Problem}
+In our study of differential equations, we are trying to build skills to evaluate the one-dimensional elasticity of metals. 
+Having been introduced to RK4, it is now within our grasp to accurately evaluate mechanical oscillator systems such as springs. 
+The equations for this involve unknown functions of $t$, $y''$ and $y'$, which is where RK4 applies itself. The particular problem we 
+will use in this analysis is:
+$$y'' + by' + 16y = 0, \qquad y(0) = 1, \qquad y'(0) = 0$$
+for
+$$ b = 0, \quad 6, \quad 8, \quad 10.$$
+This equation follows the form:
+$$my'' + by' + ky = 0$$
+$m$ represents the mass on the end of the spring (measured in kg). $b$ is the damping coefficient, representing forces such as 
+friction and air resistance (measured in kg/s or N*s/m). $k$ represents the spring constant (measured in N/m). The differential 
+equation is equal to 0 because there is no external input of force, such as external vibration, in our example. The initial value 
+condition for $y$ is equal to 1 at $t = 0$, showing that the mass starts 1 meter from the spring's equilibrium. The initial 
+value condition for $y'$ is equal to 0 at $t = 0$, showing that the mass starts with no initial velocity. When evaluated at the 
+indicated values of $b$ using RK4, the results in Figure 2 are obtained. 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.90\textwidth]{FiguresofRK4/VariousDampers.png}
+    \caption{Damping Performance at Several $b$ Values}
+\end{figure}
+\subsection{Results}
+When $b = 0$, the system is undamped. With no dissipation of force, the spring continues oscillating with no reduction in amplitude. 
+When $b = 6$, the system is underdamped. This is because, while the spring is returned to equilibrium, it oscillates past equilibrium 
+and has to spring back the other way to reach rest. This kind of uncontrolled bobbing is exemplified in weak vehicle suspension, where 
+a irregularity in the road is hit and the vehicle continues moving up and down for a long time. When $b = 8$, the system is critically 
+damped, where the system returns to equilibrium quickly without overcorrecting. When $b = 10$, the system is overdamped, experiencing 
+so much friction that it doesn't return to equilibrium for a long time. An oscillator's damping behavior is determined by the 
+discriminant $b^2 - 4mk$. If the expression is less than 0, the system is underdamped. If the expression is equal to 0, the system is 
+critically damped. If the expression is greater than 0, the system is overdamped. 
+\subsection{Conversion to a First-Order System}
+In our example, the differential equation includes both the first and second derivatives of $y(t)$. This poses a problem for RK4, 
+which can only estimate the change for a first-degree derivation of the function. This requires that we convert our system to first-
+order. Mathematically, this is done by assigning new variables to our functions. Recall our original ODE:
+$$y'' + by' + 16y = 0$$
+This equation, being 2\textsuperscript{nd} order, requires 2 variables. Set $x_1$ equal to position, yielding $x_1 = y$. Then, set 
+$x_2$ equal to velocity. This leads to $x_2 = x_1' = y'$. Thus, our first equation in the system is $x_2 = x_1'$. If $x_2 = y'$, it 
+follows that $x_2' = y''$. If we rewrite our original equation to isolate $y''$, we get:
+$$y'' = -16y - by'$$
+Substituting in the variables we defined earlier yields:
+$$x_2' = -16x_1 - bx_1', \qquad x_2 = x_1'$$
+This equation is now in a form that can be dealt with using RK4.
+
+\section{Convergence of Undamped Systems}
+All this work that we've performed using RK4 begs the question: is this helpful or necessary? Would Euler's Method suffice to evaluate 
+a mechanical oscillator? After all, it is simpler to use. The answer to these questions is that RK4 is absolutely necessary. Euler's Method 
+overestimates a function because it estimates the slope at point $x$ and then moves a distance $h$ in a straight line. This tendency 
+accentuates error when slope changes rapidly or when it changes from positive to negative. In an undamped oscillatory system, the slope 
+changes constantly in this way. Ultimately, using Euler's Method to evaluate such a system results in accumulating exaggerations of the spring's 
+position, implying that there is energy input to the system. We specified earlier that this is not the case. Moreover, the errors of Euler's 
+Method continue to accumulate exponentially as time ($t$) approaches infinity. This explosion of error is unacceptable for a robust analysis 
+of oscillatory systems. RK4, however, doesn't suffer from this tendency. In fact, it follows the function quite closely. This is reflective of 
+how RK4 approximates the slope of the function at 4 points along the distance $h$. Figure 3 demonstrates both the accuracy of RK4 and the 
+error accumulation of Euler's Method. Figure 4 is a log-log plot of the error for each method at various step sizes $h$, and demonstrates 
+the first-order convergence of Euler's Method and the fourth-order convergence of RK4.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth]{FiguresofRK4/EulervsRK4.png}
+    \caption{Accuracy of Approximation Methods}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth]{FiguresofRK4/loglogEuVSRK4.png}
+    \caption{Convergence of Approximation Methods}
+\end{figure}
+
+\newpage
+\section{Conclusion}
+In this paper, we discussed numerical integration methods with greater accuracy that Euler's Method. Specifically, we looked at the midpoint 
+method, or RK2, and Runge-Kutta 4, or RK4. RK4 is the most popular of the numerical integration methods, due to its accuracy and relative 
+computational ease. This method applies itself especially well in the example of mechanical oscillators, an application which Euler's Method 
+fails to succeed at. Being able to approximate mechanical oscillators allows us to look at the different damping cases and to analyze the overall 
+behavior of these systems. 
+
+\section{Bibliography}
+\noindent\hangindent=1.5em \hangafter=1
+Nagle, R. Kent, Edward B. Saff, and Arthur David Snider (2018). \textit{Fundamentals of Differential Equations}. 9th ed. Pearson. \\
+\hspace*{1.5em}\textsc{isbn}: 9780321977113
+
+\noindent\hangindent=1.5em \hangafter=1
+Sauer, Timothy (2017). \textit{Numerical Analysis}. 3rd ed. Pearson. \\
+\hspace*{1.5em}\textsc{isbn}: 9780134696454
+
+\noindent\hangindent=1.5em \hangafter=1
+Krause, Jaden (2026). \textit{Initial Value Problems and Euler's Method}
+
+\end{document}
