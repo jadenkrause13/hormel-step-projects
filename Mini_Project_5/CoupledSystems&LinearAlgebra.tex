@@ -1,0 +1,239 @@
+\documentclass{article}
+
+\title{Coupled Mechanical Systems and Linear Algebra}
+\author{Jaden Krause}
+\date{November 10, 2026}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\makeatletter
+\renewcommand{\topfraction}{0.95}       % Allow figures to use up to 95% of the page top
+\renewcommand{\textfraction}{0.05}      % Allow text to take as little as 5% of the page 
+\renewcommand{\bottomfraction}{0.95}    % Allow figures to use up to 95% of the page bottom
+\renewcommand{\floatpagefraction}{0.85}  % Allow a float page to be created even if it's only 20% full
+\setcounter{topnumber}{4}               % Allow up to 4 figures at the top of a page
+\setcounter{bottomnumber}{4}            % Allow up to 4 figures at the bottom of a page
+\setcounter{totalnumber}{8}             % Allow up to 8 total figures per page
+\makeatother
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Following our previous analysis of mechanical oscillators, our discussion naturally leads us to further study 
+in two areas. The first is coupled mechanical systems. Such a system is defined as having two masses with a 
+spring between them and springs on either side of the masses, attached to two supports. The second area of 
+interest is linear algebra and the use of matrices in solving such a system. In this paper, we will analyze both 
+of these topics, discussing their particular details.
+
+\section{The Nature of Coupled Mechanical Systems}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{FiguresofCoupledSystems/coupled_system_schematic.png}
+    \caption{Schematic of a Coupled Mechanical System}
+\end{figure}
+Coupled mechanical systems can take many different forms, with different support structures and spring arrangements. 
+For this discussion, we will be using the structure described in the introduction and illustrated by Figure 1. Furthermore, 
+we will be simplifying our model by ignoring the effects of external and internal friction, and air resistance. The 
+masses can have different values, and the spring constants can also vary from each other. One characteristic of coupled 
+mechanical systems is the normal modes of the systems. A two-mass system, such as the object of our study, has two normal 
+modes, moving with either the same direction and magnitude or opposite direction and magnitude. This is illustrated 
+in Figure 2. Omega ($\omega$) represents the angular frequency of the vibration.
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{FiguresofCoupledSystems/vibrational_modes.png}
+    \caption{Schematic of a Coupled Mechanical System}
+\end{figure}
+
+\section{Matrices and Coupled Mechanical Systems}
+Matrices are useful in that they allow us to organize large groups of information and deal with it concisely and efficiently. 
+In a system with motion, as we are dealing with in coupled mechanical systems, they can also be used to represent position and 
+velocity. The first matrix of interest to us is the flexibility matrix. Flexibility is measured in $\frac{m}{N}$. Using the 
+inverse operation on the flexibility matrix gives us the stiffness matrix for the represented structure. Being the inverse 
+of flexibility, stiffness is measured in $\frac{N}{m}$. This operation allows us to deal with the equation:
+$$ \textbf{y} = D\textbf{f} $$
+Where $\textbf{y}$ represents the displacement and $\textbf{f}$ represents the force applied. Knowing how to use the 
+inverse of matrices allows us to solve this equation for both displacement and force, an important capability when dealing 
+with these systems. 
+
+\section{Eigenvalues and Eigenvectors}
+An important aspect of matrices in coupled mechanical systems regards two related topics: Eigenvalues and Eigenvectors. 
+The Eigenvalue ($\lambda = \omega^2$) represents how fast the system oscillates. The Eigenvector represents where the masses 
+move relative to each other in the system. The eigenvector is a vector such that when multiplied by associated matrix $A$, it 
+results in a change only of magnitude, not direction. The magnitude of the change is the eigenvalue. As shown above, the 
+eigenvalue is found using the square of the angular frequency of the system. We use the eigenvalue to find the normal modes, 
+which is important because any given oscillation of the system is a combination of its normal modes, even if they look 
+random, such as in Figure 3. 
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{FiguresofCoupledSystems/displacement_and_time.png}
+    \caption{Combination of Normal Modes}
+\end{figure}
+A physical example of a normal mode is the vibration of a plucked guitar string. The equation to find the eigenvalues is:
+$$ \det(D - \lambda I) = 0 $$
+Where \textit{D} (the dynamical matrix) is the result of the product $ D = M^{-1}K $. \textit{M} is the mass matrix of 
+the system, and \textit{K} is the stiffness matrix. \textit{I} is the identity matrix. Once the eigenvalues are found, 
+plug them into the equation $(D - \lambda I)A = 0$ one at a time to find the matching normal mode vector \textit{A}. In 
+the section below, we will consider an example.
+
+\section{Mechanical System Example Problem}
+$$ M\text{x}'' + K\text{x} = 0 $$
+For the symbolic equation listed above, here is the data for our problem:
+\begin{align*}
+m_1 &= 1 & m_2 &= 1 & (\text{kg}) \\
+k_1 &= 2 & k_2 &= 2 & k_3 &= 3 & \left(\frac{\text{N}}{\text{m}}\right)
+\end{align*}
+We will use this information to find the normal frequencies of the system. This system follows the pattern of the system 
+in Figure 1, with two masses connected supports by springs with a spring in between them. First, let us start by identifying 
+the mass and stiffness matrices.
+\[
+M = \begin{bmatrix} 
+    m_1 & 0 \\
+    0 & m_2
+\end{bmatrix} = 
+\begin{bmatrix}
+    1 & 0 \\
+    0 & 1 
+\end{bmatrix}
+\]
+\[
+K = \begin{bmatrix}
+    k_1 + k_2 & -k_2 \\
+    -k_2 & k_2 + k_3
+\end{bmatrix} = 
+\begin{bmatrix}
+    4 & -2 \\
+    -2 & 5
+\end{bmatrix}
+\]
+Putting these matrices into the equation $ M\text{x}'' + K\text{x} = 0 $:
+\[
+\begin{bmatrix}
+    1 & 0 \\
+    0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+    x_1'' \\
+    x_2''
+\end{bmatrix}
++ \begin{bmatrix}
+    4 & -2 \\
+    -2 & 5
+\end{bmatrix}
+\begin{bmatrix}
+    x_1 \\
+    x_2
+\end{bmatrix}
+= \begin{bmatrix}
+    0 \\
+    0
+\end{bmatrix}
+\]
+Moving on in our analysis, it is necessary to reduce this second-order DE into a linear, first-order problem. Solving for $x''$:
+$$ \text{x}'' = -M^{-1}K\text{x} $$
+Recall from previously that we use the equation $ \det(D - \lambda I) = 0 $ to find the eigenvalues, which we use to find the 
+normal frequencies. To find \textit{D}:
+$$ D = M^{-1}K $$
+\[
+D = \begin{bmatrix}
+    1 & 0 \\
+    0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+    4 & -2 \\
+    -2 & 5 
+\end{bmatrix}
+= \begin{bmatrix}
+    4 & -2 \\
+    -2 & 5
+\end{bmatrix}
+\]
+(Since \textit{M} is the identity matrix, its inverse is the same as the original). Now we solve $ \det(D - \lambda I) = 0 $:
+\[
+\det(D - \lambda I) = \det\begin{bmatrix}
+    4-\lambda & -2 \\
+    -2 & 5-\lambda 
+\end{bmatrix} = 0
+\]
+$$ (4-\lambda)(5-\lambda)-(-2)(-2)=0 $$
+$$ 20-4\lambda-5\lambda+\lambda^2-4=0 $$
+$$ \lambda^2-9\lambda+16=0 $$
+Using the quadratic formula we obtain:
+\begin{align*}
+    \lambda_1 &= \frac{9-\sqrt{17}}{2} \\
+    \lambda_2 &= \frac{9+\sqrt{17}}{2}
+\end{align*}
+Using $ \lambda = \omega^2 $, we can find the normal angular frequencies of the system by taking the positive square roots:
+\begin{align*}
+    \omega_1 &= \sqrt{\frac{9-\sqrt{17}}{2}} \approx 1.562 \text{rad/s} \\
+    \omega_2 &= \sqrt{\frac{9+\sqrt{17}}{2}} \approx 2.562 \text{rad/s}
+\end{align*}
+If we wanted to find the position functions for the system, we would need both the initial values for $x_1'$ and $x_2'$
+and the eigenvectors for the system. The equation we use to find the eigenvectors is $ (D-\lambda I)\textbf{v}=0$ where 
+\textbf{v} represents the eigenvector. We solve this using each of our eigenvalues:
+\[
+\begin{bmatrix}
+    4-\lambda & -2 \\
+    -2 & 5-\lambda
+\end{bmatrix}
+\begin{bmatrix}
+    v_1 \\
+    v_2
+\end{bmatrix}
+= \begin{bmatrix}
+    0 \\
+    0
+\end{bmatrix}
+\]
+This expression gives us $(4-\lambda)v_1-2v_2=0$, which simplifies to:
+$$ 2v_2=(4-\lambda)v_1$$
+For $\lambda_1=\frac{9-\sqrt{17}}{2}$,
+\begin{align*}
+    2v_2&=\left(4-\frac{9-\sqrt{17}}{2}\right)v_1 \\
+    2v_2&=\left(\frac{\sqrt{17}-1}{2}\right)v_1    
+\end{align*}
+Notice that we now have an equation with two variables. To find solutions, we use the characteristic of eigenvectors 
+that they can be scaled by any nonzero number. Observe that choosing $v_1=4$ both eliminates the fraction and the 
+coefficient of $v_2$.
+\begin{align*}
+    2v_2&=\left(\frac{\sqrt{17}-1}{2}\right)(4) \\
+    v_2&=\sqrt{17}-1\approx 3.12 \\
+\end{align*}
+Leaving us with:
+\[
+v_1\approx\begin{bmatrix}
+    4 \\
+    3.12
+\end{bmatrix}
+\]
+For $\lambda_2=\frac{9+\sqrt{17}}{2}$,
+\begin{align*}
+    2v_2&=\left(4-\frac{9+\sqrt{17}}{2}\right)v_1 \\
+    2v_2&=\left(\frac{-1-\sqrt{17}}{2}\right)v_1
+\end{align*}
+Notice again that $v_1=4$ clears the denominator and the coefficient of $v_2$.
+\begin{align*}
+    2v_2&=\left(4-\frac{9+\sqrt{17}}{2}\right)(4) \\
+    v_2&=-1-\sqrt{17}\approx -5.12 \\
+    v_2&\approx\begin{bmatrix}
+        4 \\
+        -5.12
+    \end{bmatrix}
+\end{align*}
+Each of these values have tangible correlation to the system under study. The matrix for $v_1$ represents the motion in 
+the mode where both masses are moving in the same direction, at different amplitudes. The matrix for $v_2$ represents 
+the case where the masses are moving in opposite directions (indicated by the negative sign), at their respective amplitudes. 
+
+\section{Conclusion}
+In this project, we discussed the coupled-mass system, matrix operations, and eigenvalues and eigenvectors. We also worked 
+through an example problem with two connected masses in detail to reinforce understanding of the concepts. This foundation 
+will aid in our overall goal of analyzing the elasticity of metals.
+
+\section{Bibliography}
+\noindent\hangindent=1.5em \hangafter=1
+Nagle, R. Kent, Edward B. Saff, and Arthur David Snider (2018). \textit{Fundamentals of Differential Equations}. 9th ed. Pearson. \\
+\hspace*{1.5em}\textsc{isbn}: 9780321977113
+
+\noindent\hangindent=1.5em \hangafter=1
+Lay, David C., Steven R. Lay, and Judi J. McDonald (2021). \textit{Linear Algebra and Its Applications}. 6th ed. Pearson.
+
+\end{document}
